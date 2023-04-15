@@ -44,7 +44,30 @@ For example:
 python3 pylon_to_mqtt.py --pylon_port /dev/ttyUSB0 --rack_name Main --mqtt_host 192.168.2.245 --mqtt_root Pylontech --mqtt_user tomascrespo --mqtt_pass mysecretpassword --publish_rate 5
 ```
 
+## Run it as a service
+I run it as a service in Debian 11 (bullseye). Instructions could be different for other Linux distros.
 
+Create the file `pylon2mqtt.service` into `/etc/systemd/system` with contents:
+```
+[Unit]
+Description=Read values from Pylontech batteries and publish into MQTT
+
+[Service]
+User=pi
+WorkingDirectory=/home/pi/pylon2mqtt
+ExecStart=python3 pylon_to_mqtt.py --pylon_port /dev/ttyUSB0 --rack_name Main --mqtt_host localhost --mqtt_root Pylontech --mqtt_user tomascrespo --mqtt_pass mysecretpassword --publish_rate 5
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+```
+
+And finally run your service
+```
+sudo systemctl daemon-reload
+sudo systemctl enable pylon2mqtt
+sudo systemctl start pylon2mqtt
+```
 
 # @todo
 * Try to change baud rate to greater speed, like 115200
