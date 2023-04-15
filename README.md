@@ -68,6 +68,9 @@ sudo systemctl daemon-reload
 sudo systemctl enable pylon2mqtt
 sudo systemctl start pylon2mqtt
 ```
+# Pylontech RS232 protocol specification
+Pylontech RS232 protocol specification [in this file](https://github.com/tomascrespo/pylon2mqtt/blob/main/PYLON%20LFP%20Battery%20communication%20protocol%20-%20RS232%20V2.8%2020161216.pdf)
+
 
 # @todo
 * Try to change baud rate to greater speed, like 115200
