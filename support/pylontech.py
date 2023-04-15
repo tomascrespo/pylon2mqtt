@@ -22,13 +22,21 @@ class DivideBy100(construct.Adapter):
     def _decode(self, obj, context, path) -> float:
         return obj / 100
 
+#class ToVolt(construct.Adapter):
+#    def _decode(self, obj, context, path) -> float:
+#        return round((obj / 1000), 3)
+
+#class ToAmp(construct.Adapter):
+#    def _decode(self, obj, context, path) -> float:
+#        return round((obj / 100), 2)
+
 class ToVolt(construct.Adapter):
     def _decode(self, obj, context, path) -> float:
-        return round((obj / 1000), 3)
+        return obj / 1000
 
 class ToAmp(construct.Adapter):
     def _decode(self, obj, context, path) -> float:
-        return round((obj / 100), 2)
+        return obj / 10
 
 class Round1(construct.Adapter):
     def _decode(self, obj, context, path) -> float:
@@ -52,6 +60,7 @@ class Pylontech:
 
     manufacturer_info_fmt = construct.Struct(
         "DeviceName" / JoinBytes(construct.Array(10, construct.Byte)),
+        #"Version" / construct.CString("utf8"),
         "Version" / construct.Array(2, construct.Byte), # MOD by Tomás Crespo: previously was "SoftwareVersion"
         "ManufacturerName" / JoinBytes(construct.GreedyRange(construct.Byte)),
     )
@@ -86,14 +95,17 @@ class Pylontech:
         "GroupedCellsTemperatures" / construct.Array(construct.this.NumberOfTemperatures, ToCelsius(construct.Int16sb)),
         "Current" / ToAmp(construct.Int16sb),
         "Voltage" / ToVolt(construct.Int16ub),
-        "Power" / Round1(construct.Computed(construct.this.Current * construct.this.Voltage)),
+        #"Power" / Round1(construct.Computed(construct.this.Current * construct.this.Voltage)),
+        "Power" / construct.Computed(construct.this.Current * construct.this.Voltage),
         "_RemainingCapacity" / construct.Int16ub,
         "RemainingCapacity" / DivideBy100(construct.Computed(construct.this._RemainingCapacity)),
         "_UserDefinedItems" / construct.Int8ub,
         "TotalCapacity" / DivideBy100(construct.Int16ub),
         "CycleNumber" / construct.Int16ub,
+        "TotalPower" / construct.Computed(construct.this.Power),
         "StateOfCharge" / Round1(construct.Computed(construct.this._RemainingCapacity / construct.this.TotalCapacity)),
     )
+
 
     # MOD by Tomás Crespo
     #def __init__(self, serial_port='/dev/ttyUSB0', baudrate=9600):

@@ -185,7 +185,7 @@ def PublishDiscoverySub(component, entity, jsonElement, device_class, unit_of_me
     device["hw_version"] = pack_barcodes[current_pack_index]
     device["sw_version"] = CONFIG_VERSION
     device["manufacturer"] = "ClassicDIY"
-    device["model"] = pack_versions[current_pack_index]
+    #device["model"] = pack_versions[current_pack_index]
     device["identifiers"] = "Pack{}_{}".format(current_pack_number, pack_barcodes[current_pack_index])
     doc["device"] = device
     mqttClient.publish("{}/{}/{}/config".format(HOME_ASSISTANT_PREFIX, component, object_id),json.dumps(doc, sort_keys=False, separators=(',', ':')), qos=0, retain=False)
@@ -206,6 +206,7 @@ def publishDiscovery(pylonData):
     
     PublishDiscoverySub("sensor", "PackVoltage", "PackVoltage.Reading", "voltage", "V", "mdi:lightning-bolt")
     PublishDiscoverySub("sensor", "PackCurrent", "PackCurrent.Reading", "current", "A", "mdi:current-dc")
+    PublishDiscoverySub("sensor", "PackPower", "Power", "power", "W", "mdi:current-dc") # MOD by Tomás Crespo
     PublishDiscoverySub("sensor", "SOC", "SOC", "battery", "%", icon=0)
     PublishDiscoverySub("sensor", "RemainingCapacity", "RemainingCapacity", "current", "Ah", "mdi:ev-station")
     PublishCellsDiscovery(pylonData.NumberOfCells)
@@ -243,6 +244,7 @@ def periodic(polling_stop):
                     current_pack_number = current_pack_index + 1 # pack number is origin 1
                     if not info_published[current_pack_index]:
                         vi = pylontech.get_version_info(current_pack_number)
+                        vi.Version = "@todo"
                         pack_versions[current_pack_index] = vi.Version
                         log.info("version_info: {}".format(vi.Version))
                         if vi:
