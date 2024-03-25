@@ -114,7 +114,7 @@ class Pylontech:
     # New constructor that sets the baud rate to 4800
     # @todo create the method set_baud_rate() and try to work at 115200, checking response
     def __init__(self, serial_port='/dev/ttyUSB0', baudrate=1200):
-        self.s = serial.Serial(serial_port, baudrate, bytesize=8, parity=serial.PARITY_NONE, stopbits=1, timeout=6)
+        self.s = serial.Serial(serial_port, 1200, bytesize=8, parity=serial.PARITY_NONE, stopbits=1, timeout=6)
         self.s.write(bytes([0x7E, 0x32, 0x30, 0x30, 0x31, 0x34, 0x36, 0x39, 0x31, 0x45, 0x30, 0x30, 0x32, 0x30, 0x33, 0x46, 0x44, 0x32, 0x46, 0x0D])) # Sets speed to 4800
         time.sleep(1)
         self.s.close()
