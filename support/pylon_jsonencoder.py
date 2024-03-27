@@ -50,22 +50,22 @@ def encodePylon_readings(decoded, ai):
     pylonData["Temps"] = temperatures
 
     current = {}
-    current["Reading"] = decoded.Current
+    current["Reading"] = float('{0:.2f}'.format(decoded.Current))
     if ai: # got alarm info?
         current["State"] = ai.CurrentState
     pylonData["PackCurrent"] = current
 
     voltage = {}
-    voltage["Reading"] = decoded.Voltage
+    voltage["Reading"] = float('{0:.2f}'.format(decoded.Voltage))
     if ai: # got alarm info?
         voltage["State"] = ai.VoltageState
     pylonData["PackVoltage"] = voltage
 
-    pylonData["RemainingCapacity"] = decoded.RemainingCapacity
-    pylonData["FullCapacity"] = decoded.TotalCapacity
+    pylonData["RemainingCapacity"] = decoded.RemainingCapacity / 10
+    pylonData["FullCapacity"] = decoded.TotalCapacity / 10
     pylonData["CycleCount"] = decoded.CycleNumber
     pylonData["SOC"] = decoded.StateOfCharge
-    pylonData["Power"] = decoded.Power
+    pylonData["Power"] = float('{0:.2f}'.format(decoded.Power))
     if ai: # got alarm info?
         pso = {}
         ProtectSts1 = ai.ProtectSts1
