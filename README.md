@@ -56,6 +56,8 @@ Description=Read values from Pylontech batteries and publish into MQTT
 [Service]
 User=pi
 WorkingDirectory=/home/pi/pylon2mqtt
+TimeoutStartSec=infinity
+ExecStartPre=/bin/sleep 120
 ExecStart=python3 pylon_to_mqtt.py --pylon_port /dev/ttyUSB0 --rack_name Main --mqtt_host localhost --mqtt_root Pylontech --mqtt_user tomascrespo --mqtt_pass mysecretpassword --publish_rate 5
 Restart=always
 
