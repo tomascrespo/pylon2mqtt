@@ -33,7 +33,7 @@ tempKeys = ["CellTemp1_4", "CellTemp5_8", "CellTemp9_12", "CellTemp13_16", "MOS_
 # --------------------------------------------------------------------------- # 
 argumentValues = { \
     'pylonPort':os.getenv('PYLON_PORT', "/dev/ttyUSB0"), \
-    'baud_rate':os.getenv('PYLON_BAUD_RATE', "9600"), \
+    'baud_rate':os.getenv('PYLON_BAUD_RATE', "4800"), \
     'rackName':os.getenv('RACK_NAME', "Main"), \
     'mqttHost':os.getenv('MQTT_HOST', "mosquitto"), \
     'mqttPort':os.getenv('MQTT_PORT', "1883"), \
@@ -87,6 +87,8 @@ def on_connect(client, userdata, flags, rc):
             
             #publish that we are Online
             will_topic = "{}{}/tele/LWT".format(argumentValues['mqttRoot'], argumentValues['rackName'])
+            mqttClient.publish(will_topic, "-",  qos=0, retain=False)
+            time.sleep(1)
             mqttClient.publish(will_topic, "Online",  qos=0, retain=False)
         except Exception as e:
             log.error("MQTT Subscribe failed")
@@ -184,7 +186,7 @@ def PublishDiscoverySub(component, entity, jsonElement, device_class, unit_of_me
     device["via_device"] = argumentValues['mqttRoot'][:-1]
     device["hw_version"] = pack_barcodes[current_pack_index]
     device["sw_version"] = CONFIG_VERSION
-    device["manufacturer"] = "ClassicDIY"
+    device["manufacturer"] = "Pylontech-Pylon Technologies Co., Ltd."
     #device["model"] = pack_versions[current_pack_index]
     device["identifiers"] = "Pack{}_{}".format(current_pack_number, pack_barcodes[current_pack_index])
     doc["device"] = device
@@ -209,6 +211,7 @@ def publishDiscovery(pylonData):
     PublishDiscoverySub("sensor", "PackPower", "Power", "power", "W", "mdi:current-dc") # MOD by Tomás Crespo
     PublishDiscoverySub("sensor", "SOC", "SOC", "battery", "%", icon=0)
     PublishDiscoverySub("sensor", "RemainingCapacity", "RemainingCapacity", "current", "Ah", "mdi:ev-station")
+    PublishDiscoverySub("sensor", "CycleCount", "CycleCount", "", "", "mdi:battery-sync")
     PublishCellsDiscovery(pylonData.NumberOfCells)
     PublishTempsDiscovery(pylonData.NumberOfTemperatures)
     discovery_published[current_pack_index] = True
@@ -259,6 +262,10 @@ def periodic(polling_stop):
                     ai = pylontech.get_alarm_info(current_pack_number)
                     log.debug("get_alarm_info: {}".format(ai))
                     if pylonData: # got data
+           #publish that we are Online
+                        will_topic = "{}{}/tele/LWT".format(argumentValues['mqttRoot'], argumentValues['rackName'])
+                        mqttClient.publish(will_topic, "Online",  qos=0, retain=False)
+
                         mqttPublish(encodePylon_readings(pylonData, ai),"readings/Pack{}".format(current_pack_number), False)
                         if discovery_published[current_pack_index] == False:
                             publishDiscovery(pylonData)
