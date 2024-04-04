@@ -1,6 +1,13 @@
 # pylon2mqtt
 Reads values from Pylontech US2000 batteries and publish to a MQTT broker
 
+> [!WARNING]  
+> This project has been tested on Pylontech US2000B batteries with firmare version 2.3 and it is working perfectly, but then these batteries were updated to firmware version 3.2 and this code does not work anymore.
+> It looks that Pylontech has done some changes and now the serial port (RS232) does not support Pylontech communication protocol (B.12 data protocol) and it only supports communication by console shell commands.
+> 
+> So it you have Pylontech batteries with modern firmware you should use [this other project](https://github.com/tomascrespo/pylon-RS232-to-mqtt) which uses console commands to get data from Pylontech by RS232. Another option is use RS485 port (CAN bus) if this port is availabe (not my case).
+> 
+
 # Description
 I wanted to read the values of my Pylontech batteries from console port (RS232 protocol) and use them in my HomeAssistant installation (through MQTT).
 I found two interesting projects that could work for this:
